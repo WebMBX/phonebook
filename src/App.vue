@@ -1,19 +1,21 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="container">
+      <img alt="Vue logo" src="./assets/logo.png" />
+      <Control />
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Control from "./components/Control.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Control,
+  },
+};
 </script>
 
 <style>
@@ -24,5 +26,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  background: #eee;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 </style>
