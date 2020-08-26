@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="table">
     <div class="table-header">
       <div class="table-header__cell">
         Фотография
@@ -12,7 +12,7 @@
             :class="{
               'table-header__sort-icon--active': activeSort === 'name',
             }"
-            >{{ sortAsc ? "↓" : "↑" }}</i
+            >{{ !sortAsc ? "↓" : "↑" }}</i
           ></span
         >
       </div>
@@ -30,36 +30,30 @@
       </div>
     </div>
 
-    <p v-if="!tableData.length">Ничего не найдено</p>
-    <div
-      class="item"
+    <p v-if="!tableData.length && !$store.state.isError">Ничего не найдено</p>
+    <p v-else-if="$store.state.isError" class="error">
+      Ошибка! Нe удалось загрузить данные!
+    </p>
+    <router-link
+      :to="`/person/${person.id}`"
       v-for="person in tableData"
-      :key="person.id.value"
-      @click="getInfo(person.id)"
+      :key="person.id"
     >
-      <router-link to="/foo">Перейти к Foo</router-link>
-      <img class="item__img" :src="person.picture.thumbnail" />
-      <div class="cell item__name" data-title="Full Name">
-        {{ person.name.last + " " + person.name.first }}
+      <div class="item">
+        <img class="item__img" :src="person.picture.thumbnail" />
+        <div class="cell item__name" data-title="Full Name">
+          {{ person.name.last + " " + person.name.first }}
+        </div>
+        <div class="cell item__date" data-title="Birthday">
+          {{ person.bday }}
+        </div>
       </div>
-      <div class="cell item__date" data-title="Birthday">
-        <!-- {{ person.bday.toLocaleDateString("ru-RU") }} -->
-        {{ person.bday }}
-      </div>
-    </div>
+    </router-link>
   </div>
 </template>
 
 <script>
 export default {
-  //   props: {
-  //     data: {
-  //       type: Array,
-  //       required: true,
-  //       default: () => [],
-  //     },
-  //   },
-
   data() {
     return {
       sortAsc: false,
@@ -75,9 +69,6 @@ export default {
   },
 
   methods: {
-    getInfo(id) {
-      console.log(id.value);
-    },
     sortByName() {
       this.sortAsc = !this.sortAsc;
       const data = this.$store.state.tableData;
@@ -100,15 +91,15 @@ export default {
       this.sortAscData = !this.sortAscData;
       const data = this.$store.state.tableData;
 
-      const sorted = data.sort((a, b) => {
-        return a.bday - b.bday;
+      data.sort(function(a, b) {
+        return new Date(a.born) - new Date(b.born);
       });
 
-      if (sorted) {
+      if (data.length) {
         this.activeSort = "data";
         this.$store.commit(
           "setTableData",
-          this.sortAscData ? sorted : sorted.reverse()
+          this.sortAscData ? data.reverse() : data
         );
       }
     },
@@ -117,6 +108,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+  color: inherit;
+  text-decoration: none;
+}
 .table__item {
   padding: 20px;
   background-color: #fff;
@@ -143,10 +138,8 @@ export default {
   overflow: hidden;
   &:hover {
     border-left: 1px solid #6b76e7;
-    background: #6b76e705;
+    background: #6b76e72b;
     cursor: pointer;
-    // transform: scale(1.1);
-    // box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
     img {
       padding-left: 13px;
     }
@@ -182,5 +175,13 @@ export default {
 
 .cpointer {
   cursor: pointer;
+}
+
+.error {
+  padding: 10px 0;
+  font-size: 1.4rem;
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
 }
 </style>
